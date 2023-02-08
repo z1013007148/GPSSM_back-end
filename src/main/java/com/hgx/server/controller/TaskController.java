@@ -57,7 +57,7 @@ public class TaskController {
         String uuid = getUUID32();
         String fileName = httpServletRequest.getParameter("filename");
 
-        String destpath = output + '/' + uuid + '/';  // /iobio/server_GPSSM/userResult/uuid/
+        String destpath = output + '/' + uuid + '/';  // /iobio/server_GraphGPSM/userResult/uuid/
         File file = new File(destpath);
         if (!file.exists()) file.mkdir();
         log.info("文件创建完成");
@@ -91,7 +91,7 @@ public class TaskController {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("/iobio_public/server_GPSSM/userResult/").append(uuid).append("/info.txt");
+        stringBuilder.append("/iobio_public/server_GraphGPSM/userResult/").append(uuid).append("/info.txt");
         try {
             FileOutputStream fos = new FileOutputStream(new File(stringBuilder.toString()), true);
             stringBuilder = new StringBuilder();

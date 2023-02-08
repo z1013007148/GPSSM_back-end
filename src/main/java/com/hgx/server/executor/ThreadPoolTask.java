@@ -44,9 +44,9 @@ public class ThreadPoolTask implements Runnable {
 
         log.debug("给用户发提交邮件");
         String body1 = "Dear User,<br/>" +
-                "This email is to inform that your GPSSM job " + targetName + " has been submitted successfully.<br/>" +
+                "This email is to inform that your GraphGPSM job " + targetName + " has been submitted successfully.<br/>" +
                 "After the task is completed, we will inform you through this mailbox.<br/>" +
-                "Thanks for using the GPSSM server.<br/><br/>" +
+                "Thanks for using the GraphGPSM server.<br/><br/>" +
                 "-------<br/>" +
                 "The Zhang Lab<br/>" +
                 "College of Information Engineering<br/>" +
@@ -54,7 +54,7 @@ public class ThreadPoolTask implements Runnable {
 
         emailSenderPool.submit(() -> {
             try {
-                sendEmail.sendMail(email, "GPSSM job " + targetName + " has been submitted successfully",
+                sendEmail.sendMail(email, "GraphGPSM job " + targetName + " has been submitted successfully",
                         body1, null, uuid);
             } catch (MessagingException | UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -70,7 +70,8 @@ public class ThreadPoolTask implements Runnable {
         boolean continueFlag = true;
         while(max_times > 0){
             files = jobFolder.listFiles();
-            log.info("files.length="+files.length);
+
+            assert files != null;
             if(files.length>2){
                 for(File file:files){
                     if(isDouble(file.getName())){
@@ -78,6 +79,11 @@ public class ThreadPoolTask implements Runnable {
                         continueFlag = false;
                         break;
                     }
+                }
+            }else{
+                // 1小时打印一次
+                if(max_times%60==0) {
+                    log.info(uuid + " files.length=" + files.length);
                 }
             }
             if(!continueFlag){
@@ -90,12 +96,16 @@ public class ThreadPoolTask implements Runnable {
             }
             --max_times;
         }
+        if(max_times==0){
+            log.info(uuid+" 任务超时，关闭线程");
+            return;
+        }
         log.info("任务 " + uuid + " 检测到结果文件");
         log.debug("给用户发结果邮件");
         String body2 = "Dear User,<br/>" +
-                "This email is to inform that your GPSSM job " + targetName + " has been completed.<br/>" +
+                "This email is to inform that your GraphGPSM job " + targetName + " has been completed.<br/>" +
                 "The score for the protein structure you submitted is <strong>" + score + "</strong><br/>" +
-                "Thanks for using the GPSSM server.<br/><br/>" +
+                "Thanks for using the GraphGPSM server.<br/><br/>" +
                 "-------<br/>" +
                 "The Zhang Lab<br/>" +
                 "College of Information Engineering<br/>" +
@@ -103,7 +113,7 @@ public class ThreadPoolTask implements Runnable {
 
         emailSenderPool.submit(() -> {
             try {
-                sendEmail.sendMail(email, "GPSSM job " + targetName + " was completed",
+                sendEmail.sendMail(email, "GraphGPSM job " + targetName + " was completed",
                         body2, null, uuid);
             } catch (MessagingException | UnsupportedEncodingException e) {
                 e.printStackTrace();
